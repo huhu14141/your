@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载3D模型</title>
+    <!-- 包含CesiumJS库 -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.87/Build/Cesium/Cesium.js"></script>
+    <!-- 包含CesiumJS样式 -->
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.87/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 99%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cesium容器 -->
+    <div id="cesiumContainer"></div>
+    <script>
+        // 设置Cesium Ion访问令牌
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMGM4OTZmNy01NjAzLTRhMGQtYWJmMy05YTNlMWMzNDA4MGEiLCJpZCI6MjExNzAxLCJpYXQiOjE3MTc1OTg3Njd9.4xkdOAFS5iiCnY5GM0_T5D10qzQGSejHZvD5Vfs94uQ';
+
+        var viewer = new Cesium.Viewer("cesiumContainer", {
+            geocoder: true,
+            homeButton: true,
+            sceneModePicker: true,
+            baseLayerPicker: true,
+            navigationHelpButton: true,
+            animation: true
+        });
+        
+        var tileset = viewer.scene.primitives.add(
+            new Cesium.Cesium3DTileset({
+                url: "3DTiles/Batchedscene/tileset.json",  // 确保路径正确
+                maximumScreenSpaceError: 8,
+                maximumMemoryUsage: 512
+            })
+        );
+
+        tileset.readyPromise.then(function (tileset) {
+            var boundingSphere = tileset.boundingSphere;
+            viewer.camera.viewBoundingSphere(boundingSphere, new Cesium.HeadingPitchRange(0, -0.5, 0));
+            viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+            viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function (e) {
+                e.cancel = true;
+                viewer.camera.flyToBoundingSphere(boundingSphere);
+            });
+        }).otherwise(function (error) {
+            console.log('加载tileset时发生错误:', error);
+        });
+
+    </script>
+</body>
+</html>

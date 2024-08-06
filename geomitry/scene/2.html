@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Viewer</title>
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.87/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.87/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+
+    <script>
+        // 设置 Cesium Ion 的访问令牌
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMGM4OTZmNy01NjAzLTRhMGQtYWJmMy05YTNlMWMzNDA4MGEiLCJpZCI6MjExNzAxLCJpYXQiOjE3MTc1OTg3Njd9.4xkdOAFS5iiCnY5GM0_T5D10qzQGSejHZvD5Vfs94uQ';
+
+        // 创建 Cesium 场景视图
+        var viewer = new Cesium.Viewer("cesiumContainer", {
+            geocoder: true,
+            homeButton: true,
+            sceneModePicker: true,
+            baseLayerPicker: true,
+            navigationHelpButton: true,
+            animation: true
+        });
+
+        // 定义模型文件的 URL 路径
+        var tileset_url = "3DTiles/Batchedscene/tileset.json";
+
+        // 加载 Cesium 3D 瓦片集
+        var tileset = new Cesium.Cesium3DTileset({ url: tileset_url });
+
+        // 当瓦片集加载完成后执行以下操作
+        tileset.readyPromise.then(function(tileset) {
+            // 将瓦片集添加到场景中
+            viewer.scene.primitives.add(tileset);
+
+            // 设置模型可见
+            tileset.show = true;
+
+            // 获取模型的中心位置
+            var center = tileset.boundingSphere.center;
+
+            // 将模型放置在地球表面上
+            var center2 = Cesium.Cartographic.fromCartesian(center);
+            var surfacePosition = Cesium.Cartesian3.fromRadians(center2.longitude, center2.latitude, 0);
+            var translation = Cesium.Cartesian3.subtract(center, surfacePosition, new Cesium.Cartesian3());
+            tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+
+            // 调整缩放
+            var scale = 1.0 / tileset.boundingSphere.radius;
+            tileset.modelMatrix = Cesium.Matrix4.multiplyByUniformScale(tileset.modelMatrix, scale, tileset.modelMatrix);
+
+            // 调整视角
+            viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromRadians(center2.longitude, center2.latitude, tileset.boundingSphere.radius * 2.5),
+                orientation: {
+                    heading: Cesium.Math.toRadians(0.0),
+                    pitch: Cesium.Math.toRadians(-30.0),
+                    roll: 0.0
+                }
+            });
+
+            // 禁用默认的 Home 按钮行为，改为自定义操作
+            viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function(e) {
+                e.cancel = true;
+                viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(0.0, -0.5, tileset.boundingSphere.radius * 2.5));
+            });
+
+        }).otherwise(function(error) {
+            // 加载失败时输出错误信息到控制台
+            console.error('Error loading tileset:', error);
+        });
+    </script>
+</body>
+</html>
