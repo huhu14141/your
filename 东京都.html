@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>东京都</title>
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.83/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.83/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+    <script>
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4OTA1YjcyMC1hNmQ5LTRiOGEtYTM2Ny0yYjkyNzg1N2UwMjIiLCJpZCI6MjIxMTE2LCJpYXQiOjE3MTc5NDM5ODd9.Cu_eNLq1q4C1vOYax2RqlKRzmE-0Q2IrPHcO675WAUA';
+
+        // 创建Cesium Viewer
+        const viewer = new Cesium.Viewer('cesiumContainer');
+
+        // 定义包含所有tileset.json路径的数组
+        const tilesetUrls = [
+            "http://127.0.0.1:5500/13_tokyo_pref_2023_citygml_1_op_brid_3dtiles_lod1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo_pref_2023_citygml_1_op_brid_3dtiles_lod2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo_pref_2023_citygml_1_op_brid_3dtiles_lod3/tileset.json",    //3
+            "http://127.0.0.1:5500/13_tokyo_tran-mlit_2023_citygml_1_op_tran_3dtiles_lod3/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_arakawa_irumagawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_arakawa_irumagawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_arakawa_irumagawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_arakawa_irumagawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tamagawa_tamagawa-asakawa-etc_3dtiles_l1/tileset.json",
+
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tamagawa_tamagawa-asakawa-etc_3dtiles_l1_no_texture/tileset.json",    
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tamagawa_tamagawa-asakawa-etc_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tamagawa_tamagawa-asakawa-etc_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_ayasegawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_ayasegawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_ayasegawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_ayasegawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_edogawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_edogawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_edogawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_edogawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_nakagawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_nakagawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_nakagawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_nakagawa_3dtiles_l2_no_texture/tileset.json", //30
+
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_tonegawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_tonegawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_tonegawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_natl_tonegawa_tonegawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_akigawa-hiragawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_akigawa-hiragawa-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_kandagawa-zenpukujigawa-etc_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_kandagawa-zenpukujigawa-etc_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_kandagawa-zenpukujigawa-etc_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_kandagawa-zenpukujigawa-etc_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shakujiigawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shakujiigawa_3dtiles_l1_no_texture/tileset.json", 
+
+
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shakujiigawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shakujiigawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shirakogawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shirakogawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shirakogawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_arakawa_shirakogawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_asakawa-ken-iki-oogurigawa-misawagawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_asakawa-ken-iki-oogurigawa-misawagawa-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_furukawa_shibuyagawa-furukawa-etc_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_furukawa_shibuyagawa-furukawa-etc_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_furukawa_shibuyagawa-furukawa-etc_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_furukawa_shibuyagawa-furukawa-etc_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_jonan-chiku_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_jonan-chiku_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_kandagawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_kandagawa-ryuiki_3dtiles_l2_no_texture/tileset.json",     //58
+            
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_kasumigawa-tamagawa-joryu-ken-iki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_kasumigawa-tamagawa-joryu-ken-iki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_koto-naibu_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_koto-naibu_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_kuromegawa-ochiaigawa-etc-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_kuromegawa-ochiaigawa-etc-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_nakagawa-ayasegawa-ken-iki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_nakagawa-ayasegawa-ken-iki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_nogawa-sengawa-etc-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_nogawa-sengawa-etc-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sakaigawa_sakaigawa_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sakaigawa_sakaigawa_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sakaigawa_sakaigawa_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sakaigawa_sakaigawa_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sakaigawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sakaigawa-ryuiki_3dtiles_l2_no_texture/tileset.json",  //74
+            
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_shakujiigawa-shirakogawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_shakujiigawa-shirakogawa-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sumidagaw-shingashigawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_sumidagaw-shingashigawa-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tamagawa_nogawa-sengawa-etc_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tamagawa_nogawa-sengawa-etc_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tamagawa_nogawa-sengawa-etc_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tamagawa_nogawa-sengawa-etc_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tsurumigawa_tsurumigawa-ontagawa-etc_3dtiles_l1/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tsurumigawa_tsurumigawa-ontagawa-etc_3dtiles_l1_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tsurumigawa_tsurumigawa-ontagawa-etc_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tsurumigawa_tsurumigawa-ontagawa-etc_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tsurumigawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_tsurumigawa-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_zanborigawa-ryuiki_3dtiles_l2/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_fld_pref_zanborigawa-ryuiki_3dtiles_l2_no_texture/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_htd_13_1_3dtiles/tileset.json",
+            "http://127.0.0.1:5500/13_tokyo-to_pref_2023_citygml_1_op_htd_13_1_3dtiles_no_texture/tileset.json",
+          
+        ];
+
+        // 循环加载所有 tileset
+        tilesetUrls.forEach((url) => {
+            const tileset = new Cesium.Cesium3DTileset({ 
+                url: url 
+            });
+
+            tileset.readyPromise.then(function() {
+                // 放大视角到模型位置
+                viewer.zoomTo(tileset);
+            }).otherwise(function(error) {
+                console.error('Failed to load tileset:', error);
+            });
+
+            viewer.scene.primitives.add(tileset);
+        });
+    </script>
+</body>
+</html>
